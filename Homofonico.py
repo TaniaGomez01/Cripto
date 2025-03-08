@@ -1,49 +1,76 @@
-def encriptar(mensaje):
-    ans = ""
-    alf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-           'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
-           'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+import random
+tabla_homofonica = {
+    'a': ['000010', '000101', '000001'],
+    'b': ['000111', '000000'],
+    'c': ['001100', '010111'],
+    'd': ['001001'],
+    'e': ['001010', '011010'],
+    'f': ['000011', '001101', '011110'],
+    'g': ['000110', '010010'],
+    'h': ['001000'],
+    'i': ['001111'],
+    'j': ['011011'],
+    'k': ['010011'],
+    'l': ['000100', '010100'],
+    'm': ['010001', '011101'],
+    'n': ['100000', '101000'],
+    'o': ['001110'],
+    'p': ['011001'],
+    'q': ['100001'],
+    'r': ['100010'],
+    's': ['010000', '011000'],
+    't': ['100011'],
+    'u': ['001011', '010110'],
+    'v': ['100100'],
+    'w': ['011100'],
+    'x': ['100101'],
+    'y': ['100111'],
+    'z': ['010101'],
+    ' ': ['011111']
+}
 
-    alf_remp = ['00000010', '00000101', '00011010', '00000111', '00010110', '001001001', '00010001', '00100010', 
-           '01001011', '01011001', '00000111', '00111011', '01011011', '00010101', '00001000', '00110001', 
-           '00111001', '01000010', '00010000', '00110100', '00101110', '00010010', '00001100', '00100001', '00101010', '00000100']
-           
-    for ch in mensaje:
-        if ch.islower():
-            ch = ch.upper()
+def cifrar(mensaje):
+    mensaje = mensaje.lower()
+    mensaje_cifrado = ''
+    for letra in mensaje:
+        if letra in tabla_homofonica:
+            random_index = random.randint(0, len(tabla_homofonica[letra]) - 1)
+            cifrado = tabla_homofonica[letra][random_index]
+            mensaje_cifrado += cifrado
+    return mensaje_cifrado
 
-        if ch in alf:
-            index = alf.index(ch)
-            ans += alf_remp[index]
-       
-    return ans
+def ordenar(mensaje_cifrado):
+    ordenado = []
+    bits = ''
+    conta = 0
+    for bit in mensaje_cifrado:
+        if conta == 6:
+            ordenado.append(bits)
+            bits = ''
+            bits += bit
+            conta = 1
+        else:
+            bits += bit
+            conta += 1
+    ordenado.append(bits)
+    return ordenado
+        
 
+def descifrar(mensaje_cifrado):
+    grupos = ordenar(mensaje_cifrado)
+    mensaje_descifrado = ''
+    for grupo in grupos:
+        # Busca en la tabla la letra cuyo código (dentro de su lista) coincida con el grupo actual
+        for letra, codigos in tabla_homofonica.items():
+            if grupo in codigos:
+                mensaje_descifrado += letra
+                break
+    return mensaje_descifrado
 
-def desencriptar(mensaje):
-    ans = ""
-    rang = ""
-    alf_remp = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-           'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
-           'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+mensaje = 'este es un mensaje secreto'
 
-    alf = ['00000010', '00000101', '00011010', '00000111', '00010110', '001001001', '00010001', '00100010', 
-           '01001011', '01011001', '00000111', '00111011', '01011011', '00010101', '00001000', '00110001', 
-           '00111001', '01000010', '00010000', '00110100', '00101110', '00010010', '00001100', '00100001', '00101010', '00000100']
-           
-    for ch in mensaje:
-        rang += ch 
-        if rang in alf:
-            index = alf.index(rang)          
-            ans += alf_remp[index]
-            rang = ""
-       
-
-    return ans
-    
-mensaje = "BAILA SIN CESAR"
-
-encriptado = encriptar(mensaje)
-print("El texto original es: " + mensaje)
-print("El mensaje encriptado es: " + encriptado)
-des = desencriptar(encriptado)
-print("El mensaje desencriptado es: " + des)
+print("Mensaje original: ", mensaje)
+mensaje_cifrado = cifrar(mensaje)
+print("Mensaje cifrado: ", mensaje_cifrado)
+mensaje_descifrado = descifrar(mensaje_cifrado)
+print("Mensaje descifrado: ", mensaje_descifrado)
